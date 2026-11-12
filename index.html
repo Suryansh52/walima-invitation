@@ -1,0 +1,1179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Zaid &amp; Bushra — Royal Walima Invitation</title>
+  
+  <!-- Premium Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@600;700;800&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Montserrat:wght@300;400;500;600&family=Amiri:wght@700&display=swap" rel="stylesheet">
+
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --gold-peak: #FFFFFF;
+      --gold-bright: #FFE8A0;
+      --gold-main: #E2B85E;
+      --gold-deep: #B88528;
+      --ivory: #FFFDF9;
+      --champagne: #F5E8D3;
+      --blush-rose: #F8B4BD;
+      --bg-dark: #000000;
+    }
+
+    html {
+      width: 100%;
+      background-color: var(--bg-dark);
+      overflow-x: hidden;
+      scroll-behavior: auto;
+    }
+
+    body {
+      width: 100%;
+      min-height: 100%;
+      background-color: var(--bg-dark);
+      color: var(--ivory);
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      overflow-x: hidden;
+      user-select: none;
+      -webkit-font-smoothing: antialiased;
+      cursor: default;
+    }
+
+    /* Scroll track to drive 30s video scrub */
+    #scroll-track {
+      height: 5200px;
+      width: 100%;
+      position: relative;
+      pointer-events: none;
+    }
+
+    /* Fixed 3D Viewport - Clean black backdrop, zero dark muddy overlays */
+    #viewport {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      height: 100dvh;
+      overflow: hidden;
+      perspective: 1000px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: #000;
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    /* 9:16 Stage Container */
+    #stage {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      max-width: calc(100vh * 9 / 16);
+      max-height: 100vh;
+      max-height: 100dvh;
+      overflow: hidden;
+      transform-style: preserve-3d;
+      pointer-events: none;
+    }
+
+    @media (max-width: 600px) {
+      #stage {
+        max-width: 100vw;
+        max-height: 100dvh;
+      }
+    }
+
+    /* Hardware-Accelerated Canvas Renderer (100% Immune to Safari/Chrome Play Buttons) */
+    #palace-canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    /* Hidden background video decoder */
+    #bg-video {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* WebKit Media Control Suppressors */
+    video::-webkit-media-controls,
+    video::-webkit-media-controls-start-playback-button,
+    video::-webkit-media-controls-play-button,
+    video::-webkit-media-controls-panel,
+    video::-webkit-media-controls-enclosure {
+      display: none !important;
+      -webkit-appearance: none !important;
+      opacity: 0 !important;
+    }
+
+    /* Floating Golden Sparkles & Petals */
+    #particle-canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 6;
+    }
+
+    /* Royal Ornamental Frame Border (Pure antique gold, transparent center) */
+    .frame-border {
+      position: absolute;
+      inset: clamp(12px, 3.5vw, 24px);
+      border: 1.5px solid rgba(226, 184, 94, 0.75);
+      pointer-events: none;
+      z-index: 20;
+      border-radius: 4px;
+      box-shadow: 0 0 15px rgba(226, 184, 94, 0.2);
+    }
+    .frame-border::before {
+      content: '';
+      position: absolute;
+      inset: clamp(4px, 1.2vw, 6px);
+      border: 1px dashed rgba(255, 238, 180, 0.4);
+      border-radius: 2px;
+    }
+    .corner-ornament {
+      position: absolute;
+      width: clamp(16px, 4.5vw, 24px);
+      height: clamp(16px, 4.5vw, 24px);
+      border: 2px solid var(--gold-main);
+      z-index: 21;
+    }
+    .corner-tl { top: clamp(8px, 2.5vw, 18px); left: clamp(8px, 2.5vw, 18px); border-right: none; border-bottom: none; }
+    .corner-tr { top: clamp(8px, 2.5vw, 18px); right: clamp(8px, 2.5vw, 18px); border-left: none; border-bottom: none; }
+    .corner-bl { bottom: clamp(8px, 2.5vw, 18px); left: clamp(8px, 2.5vw, 18px); border-right: none; border-top: none; }
+    .corner-br { bottom: clamp(8px, 2.5vw, 18px); right: clamp(8px, 2.5vw, 18px); border-left: none; border-top: none; }
+
+    /* Scene Layers - 3D Text Floating Directly Inside the Palace Atmosphere */
+    .scene {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: clamp(20px, 5vh, 45px) clamp(16px, 5.5vw, 36px);
+      width: 100%;
+      max-width: min(92vw, 440px);
+      margin: 0 auto;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      z-index: 10;
+      transform-style: preserve-3d;
+      will-change: transform, opacity, filter;
+    }
+
+    .scene.active {
+      visibility: visible;
+      pointer-events: none;
+    }
+    .scene.active .action-btn {
+      pointer-events: auto;
+    }
+
+    /* Metallic 3D Gold Typography - Mixed Directly with Palace Light (No muddy dark shadow) */
+    .gold-title {
+      font-family: 'Cinzel Decorative', 'Cinzel', Georgia, serif;
+      background: linear-gradient(180deg, #FFFFFF 0%, #FFF3CC 22%, #F5CE70 52%, #D49B28 78%, #9E6B08 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 0 16px rgba(255, 220, 110, 0.65)) drop-shadow(0 2px 5px rgba(35, 18, 5, 0.95));
+      letter-spacing: 1.5px;
+      word-break: normal;
+    }
+
+    .ivory-text {
+      color: #FFFDF8;
+      text-shadow: 0 0 14px rgba(255, 240, 200, 0.6), 0 2px 5px rgba(35, 18, 5, 0.95);
+    }
+
+    .champagne-sub {
+      color: #F8E8CD;
+      font-style: italic;
+      text-shadow: 0 0 12px rgba(245, 225, 180, 0.5), 0 2px 4px rgba(35, 18, 5, 0.95);
+      letter-spacing: 1px;
+    }
+
+    /* Subtle Palace Atmospheric Bloom Behind Text (Warm Light, Not Dark) */
+    .scene::before {
+      content: '';
+      position: absolute;
+      width: 85%;
+      height: 70%;
+      background: radial-gradient(ellipse at center, rgba(255, 225, 150, 0.09) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    /* Floating Mughal Dividers */
+    .mughal-divider {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: min(70%, 260px);
+      margin: clamp(8px, 2vh, 14px) auto;
+      gap: 10px;
+      opacity: 0.95;
+    }
+    .mughal-divider::before, .mughal-divider::after {
+      content: '';
+      flex: 1;
+      height: 1.5px;
+      background: linear-gradient(90deg, transparent, #FFE082, transparent);
+      box-shadow: 0 0 8px rgba(255, 224, 130, 0.6);
+    }
+    .mughal-divider .diamond {
+      width: 10px;
+      height: 10px;
+      background: var(--gold-main);
+      transform: rotate(45deg);
+      box-shadow: 0 0 12px #FFE8A0;
+      position: relative;
+    }
+    .mughal-divider .diamond::after {
+      content: '';
+      position: absolute;
+      inset: 2px;
+      background: #FFFFFF;
+    }
+
+    /* SCENE 1: Sacred Opening */
+    .bismillah-emblem {
+      font-family: 'Amiri', 'Segoe UI Historic', serif;
+      font-size: clamp(2.4rem, 8vw, 3.6rem);
+      line-height: 1.1;
+      margin-bottom: 4px;
+    }
+    .arabic-script {
+      font-family: 'Amiri', 'Traditional Arabic', serif;
+      font-size: clamp(1.2rem, 4.4vw, 1.75rem);
+      font-weight: 700;
+      color: #FFECA8;
+      text-shadow: 0 0 18px rgba(255, 225, 120, 0.7), 0 2px 5px rgba(35, 18, 5, 0.95);
+      margin-bottom: 8px;
+      direction: rtl;
+      max-width: 95%;
+    }
+    .mercy-sub {
+      font-size: clamp(1.1rem, 3.8vw, 1.45rem);
+      font-style: italic;
+    }
+
+    /* SCENE 2: Family Invitation */
+    .family-names {
+      display: flex;
+      flex-direction: column;
+      gap: clamp(6px, 1.6vh, 12px);
+      margin: clamp(6px, 1.8vh, 14px) 0;
+      max-width: 98%;
+    }
+    .family-row {
+      font-size: clamp(0.82rem, 2.9vw, 1.1rem);
+      font-weight: 600;
+      line-height: 1.35;
+      letter-spacing: 0.3px;
+      word-wrap: break-word;
+    }
+    .host-highlight {
+      font-size: clamp(0.92rem, 3.2vw, 1.2rem);
+      font-weight: 700;
+      background: linear-gradient(180deg, #FFFFFF, #FFD56B);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 0 14px rgba(255, 215, 110, 0.6)) drop-shadow(0 2px 5px rgba(35, 18, 5, 0.95));
+    }
+
+    /* SCENE 3: Grand Couple Reveal */
+    .couple-badge {
+      font-family: 'Cinzel', Georgia, serif;
+      font-size: clamp(0.8rem, 2.7vw, 1.05rem);
+      letter-spacing: 3px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    .couple-name {
+      font-family: 'Cinzel Decorative', Georgia, serif;
+      font-size: clamp(2.3rem, 7.8vw, 3.8rem);
+      font-weight: 900;
+      line-height: 1.05;
+      letter-spacing: 2px;
+      word-break: normal;
+    }
+    .couple-amp {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: clamp(1.8rem, 5.5vw, 2.6rem);
+      color: #FFC0CB;
+      text-shadow: 0 0 20px rgba(255, 192, 203, 0.7), 0 2px 6px rgba(35, 18, 5, 0.95);
+      margin: 1px 0;
+    }
+    .daughter-credit {
+      font-size: clamp(0.85rem, 2.9vw, 1.05rem);
+      font-style: italic;
+      color: var(--champagne);
+      max-width: 95%;
+      line-height: 1.35;
+      margin-top: 4px;
+    }
+
+    /* SCENE 4: Walima Details */
+    .event-title {
+      font-family: 'Cinzel Decorative', Georgia, serif;
+      font-size: clamp(1.5rem, 5.2vw, 2.2rem);
+      font-weight: 800;
+      letter-spacing: 2px;
+    }
+    .event-date {
+      font-family: 'Cinzel', Georgia, serif;
+      font-size: clamp(1.25rem, 4.4vw, 1.8rem);
+      font-weight: 700;
+      color: #FFE699;
+      text-shadow: 0 0 16px rgba(255, 225, 120, 0.7), 0 2px 5px rgba(35, 18, 5, 0.95);
+      margin: 6px 0;
+    }
+    .time-badge {
+      display: inline-block;
+      padding: clamp(6px, 1.5vh, 8px) clamp(16px, 4.5vw, 24px);
+      border: 1.5px solid rgba(226, 184, 94, 0.85);
+      background: linear-gradient(180deg, rgba(255, 230, 160, 0.15) 0%, rgba(184, 133, 40, 0.22) 100%);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      border-radius: 40px;
+      font-family: 'Montserrat', sans-serif;
+      font-size: clamp(0.75rem, 2.6vw, 0.9rem);
+      letter-spacing: 1.5px;
+      font-weight: 600;
+      color: #FFF2C2;
+      text-shadow: 0 0 10px rgba(255, 230, 160, 0.6), 0 2px 4px rgba(35, 18, 5, 0.9);
+      box-shadow: 0 0 15px rgba(226, 184, 94, 0.3), inset 0 0 8px rgba(255, 230, 160, 0.15);
+      margin-top: 6px;
+    }
+
+    /* SCENE 5: Venue */
+    .venue-title {
+      font-family: 'Cinzel', Georgia, serif;
+      font-size: clamp(1.35rem, 4.8vw, 1.95rem);
+      font-weight: 800;
+      letter-spacing: 2px;
+    }
+    .venue-address {
+      font-size: clamp(0.85rem, 2.95vw, 1.15rem);
+      line-height: 1.5;
+      max-width: 95%;
+      margin: 10px 0 14px;
+      color: var(--ivory);
+    }
+
+    /* SCENE 6: Royal Closing */
+    .closing-await {
+      font-size: clamp(1.1rem, 3.8vw, 1.35rem);
+      font-style: italic;
+      margin-bottom: 6px;
+    }
+    .kazi-family {
+      font-family: 'Cinzel Decorative', Georgia, serif;
+      font-size: clamp(2.2rem, 7.5vw, 3.2rem);
+      font-weight: 900;
+      letter-spacing: 2px;
+      margin: 6px 0;
+    }
+
+    /* Interactive Action Buttons */
+    .action-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: clamp(10px, 2vh, 12px) clamp(20px, 5vw, 28px);
+      background: linear-gradient(135deg, rgba(226,184,94,0.35) 0%, rgba(184,133,40,0.55) 100%);
+      border: 1.5px solid #FFDE80;
+      border-radius: 30px;
+      color: #FFFFFF;
+      font-family: 'Montserrat', sans-serif;
+      font-size: clamp(0.75rem, 2.5vw, 0.85rem);
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      font-weight: 600;
+      text-decoration: none;
+      cursor: pointer;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      box-shadow: 0 4px 25px rgba(0,0,0,0.5), 0 0 18px rgba(226,184,94,0.45);
+      transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+      margin-top: 12px;
+      pointer-events: auto;
+    }
+    .action-btn:hover, .action-btn:active {
+      background: linear-gradient(135deg, rgba(226,184,94,0.6) 0%, rgba(184,133,40,0.8) 100%);
+      transform: scale(1.04);
+      box-shadow: 0 6px 30px rgba(0,0,0,0.7), 0 0 25px rgba(226,184,94,0.7);
+    }
+
+    /* Audio Controller (Floating Disc) */
+    #music-control {
+      position: fixed;
+      top: clamp(14px, 3vh, 24px);
+      right: clamp(14px, 3vw, 24px);
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(20, 15, 10, 0.7);
+      border: 1.5px solid var(--gold-main);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      padding: 6px 14px 6px 8px;
+      border-radius: 40px;
+      cursor: pointer;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.6), 0 0 15px rgba(226,184,94,0.3);
+      transition: transform 0.3s ease;
+      pointer-events: auto;
+    }
+    .disc-icon {
+      width: clamp(24px, 6vw, 28px);
+      height: clamp(24px, 6vw, 28px);
+      border-radius: 50%;
+      background: radial-gradient(circle, var(--gold-main) 20%, #111 25%, #222 60%, var(--gold-bright) 100%);
+      border: 1px solid var(--gold-peak);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: spin 4s linear infinite;
+      animation-play-state: paused;
+    }
+    .disc-icon.playing {
+      animation-play-state: running;
+    }
+    @keyframes spin {
+      100% { transform: rotate(360deg); }
+    }
+    .music-label {
+      font-family: 'Montserrat', sans-serif;
+      font-size: clamp(0.68rem, 2.3vw, 0.75rem);
+      letter-spacing: 1.2px;
+      color: var(--gold-bright);
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+
+    /* Scroll Prompt (Bottom) */
+    #scroll-indicator {
+      position: fixed;
+      bottom: clamp(38px, 7vh, 50px);
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 100;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      pointer-events: auto;
+      cursor: pointer;
+      transition: opacity 0.4s ease;
+    }
+    .scroll-label {
+      font-family: 'Montserrat', sans-serif;
+      font-size: clamp(0.65rem, 2.2vw, 0.72rem);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: #FFE699;
+      text-shadow: 0 0 10px rgba(255, 230, 150, 0.6), 0 2px 4px rgba(0,0,0,0.9);
+    }
+    .scroll-arrow {
+      width: 12px;
+      height: 12px;
+      border-right: 2px solid var(--gold-main);
+      border-bottom: 2px solid var(--gold-main);
+      transform: rotate(45deg);
+      animation: bounce 1.8s infinite;
+    }
+    @keyframes bounce {
+      0%, 20%, 50%, 80%, 100% { transform: translateY(0) rotate(45deg); }
+      40% { transform: translateY(6px) rotate(45deg); }
+      60% { transform: translateY(3px) rotate(45deg); }
+    }
+
+    /* Royal Interactive Timeline Scrub Bar (Bottom) */
+    #scrub-bar-container {
+      position: fixed;
+      bottom: clamp(8px, 2vh, 12px);
+      left: 50%;
+      transform: translateX(-50%);
+      width: min(85vw, 380px);
+      z-index: 100;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      pointer-events: auto;
+      cursor: pointer;
+    }
+    #scrub-bar-track {
+      width: 100%;
+      height: 5px;
+      background: rgba(255, 255, 255, 0.22);
+      border-radius: 4px;
+      position: relative;
+      border: 1px solid rgba(226, 184, 94, 0.4);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+    }
+    #scrub-bar-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--gold-deep), #FFE8A0);
+      border-radius: 4px;
+      box-shadow: 0 0 10px rgba(255, 232, 160, 0.8);
+    }
+    #scrub-bar-thumb {
+      position: absolute;
+      top: 50%;
+      left: 0%;
+      width: 13px;
+      height: 13px;
+      border-radius: 50%;
+      background: #FFFFFF;
+      border: 2px solid var(--gold-main);
+      transform: translate(-50%, -50%);
+      box-shadow: 0 0 10px #FFE8A0;
+    }
+    #scrub-time-label {
+      font-family: 'Montserrat', sans-serif;
+      font-size: clamp(0.6rem, 2vw, 0.65rem);
+      letter-spacing: 1.5px;
+      color: #F5E8D3;
+      text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+    }
+
+    /* Timeline Progress Pill */
+    #progress-tracker {
+      position: fixed;
+      left: clamp(8px, 2.2vw, 24px);
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 100;
+      display: flex;
+      flex-direction: column;
+      gap: clamp(8px, 1.8vh, 14px);
+      pointer-events: auto;
+    }
+    .dot {
+      width: clamp(8px, 2vw, 11px);
+      height: clamp(8px, 2vw, 11px);
+      border-radius: 50%;
+      border: 1.5px solid var(--gold-main);
+      background: rgba(0,0,0,0.5);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      pointer-events: auto;
+    }
+    .dot.active {
+      background: #FFE8A0;
+      box-shadow: 0 0 14px #FFE8A0;
+      transform: scale(1.4);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Floating Audio Player -->
+  <div id="music-control">
+    <div class="disc-icon" id="disc"></div>
+    <span class="music-label" id="music-text">Play Music</span>
+  </div>
+  <audio id="soundtrack" src="walima-invitation/assets/soundtrack.mp3" preload="auto" loop></audio>
+
+  <!-- Section Dots -->
+  <div id="progress-tracker">
+    <div class="dot active" data-progress="0.05" title="Bismillah"></div>
+    <div class="dot" data-progress="0.23" title="Family Invitation"></div>
+    <div class="dot" data-progress="0.43" title="Zaid & Bushra"></div>
+    <div class="dot" data-progress="0.62" title="Date & Time"></div>
+    <div class="dot" data-progress="0.78" title="Venue"></div>
+    <div class="dot" data-progress="0.94" title="Compliments"></div>
+  </div>
+
+  <!-- Scroll Down Indicator -->
+  <div id="scroll-indicator" title="Click or Scroll to Enter">
+    <span class="scroll-label">Scroll &bull; Swipe &bull; Tap to Enter</span>
+    <div class="scroll-arrow"></div>
+  </div>
+
+  <!-- Royal Interactive Scrub Bar -->
+  <div id="scrub-bar-container" title="Drag to scrub wedding invitation">
+    <div id="scrub-bar-track">
+      <div id="scrub-bar-fill"></div>
+      <div id="scrub-bar-thumb"></div>
+    </div>
+    <div id="scrub-time-label">00:00 / 00:30</div>
+  </div>
+
+  <!-- Scroll Height Track (Drives document scrolling) -->
+  <div id="scroll-track"></div>
+
+  <!-- 3D Fixed Viewport -->
+  <div id="viewport">
+    <div id="stage">
+      
+      <!-- Video Element: Hidden Decoder (No poster attribute, immune to Safari play buttons) -->
+      <video id="bg-video" 
+             src="walima-invitation/assets/bg_mobile.mp4" 
+             autoplay 
+             muted 
+             loop 
+             playsinline 
+             webkit-playsinline="true" 
+             preload="auto"></video>
+
+      <!-- Pure Canvas Renderer: Direct hardware drawing, zero browser controls or play overlays -->
+      <canvas id="palace-canvas"></canvas>
+
+      <!-- Floating Particle & Sparkle Canvas -->
+      <canvas id="particle-canvas"></canvas>
+
+      <!-- Royal Border Framing -->
+      <div class="frame-border"></div>
+      <div class="corner-ornament corner-tl"></div>
+      <div class="corner-ornament corner-tr"></div>
+      <div class="corner-ornament corner-bl"></div>
+      <div class="corner-ornament corner-br"></div>
+
+      <!-- SCENE 1: Sacred Opening (0.00 - 0.16) -->
+      <div class="scene active" id="scene-1">
+        <div class="bismillah-emblem gold-title">&#xFDFD;</div>
+        <div class="arabic-script">بِسْمِ ٱللَّٰهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ</div>
+        <div class="mughal-divider"><span class="diamond"></span></div>
+        <div class="champagne-sub mercy-sub">With the Mercy of Allah (SWT)</div>
+      </div>
+
+      <!-- SCENE 2: Family Invitation (0.16 - 0.33) -->
+      <div class="scene" id="scene-2">
+        <div class="champagne-sub" style="font-size: clamp(1.1rem, 3.8vw, 1.35rem);">And the blessings of</div>
+        <div class="mughal-divider"><span class="diamond"></span></div>
+        <div class="family-names">
+          <div class="family-row ivory-text">Mrs. Halima &amp; Late Mr. Kamaluddin Abdul Latif Kazi</div>
+          <div class="family-row ivory-text">Mrs. Zubeda &amp; Mr. Abubaker Ali Saheb Kazi</div>
+          <div class="family-row host-highlight">Mrs. Shaista &amp; Mr. Irfan Kamaluddin Kazi</div>
+        </div>
+        <div class="mughal-divider"><span class="diamond"></span></div>
+        <div class="ivory-text" style="font-size: clamp(0.95rem, 3.2vw, 1.2rem); line-height: 1.45; max-width: 95%;">
+          Cordially invite you for the Walima Ceremony<br>of their beloved Son
+        </div>
+      </div>
+
+      <!-- SCENE 3: Grand Couple Reveal (0.33 - 0.53) -->
+      <div class="scene" id="scene-3">
+        <div class="couple-badge champagne-sub">WALIMA CELEBRATION</div>
+        <div class="mughal-divider"><span class="diamond"></span></div>
+        <div class="couple-name gold-title">Zaid</div>
+        <div class="couple-amp">&amp;</div>
+        <div class="couple-name gold-title">Bushra</div>
+        <div class="mughal-divider"><span class="diamond"></span></div>
+        <div class="daughter-credit">
+          (D/o Mrs. Fouziya &amp; Mr. Mohammed Shariq Mohammed Yunus Tungekar)
+        </div>
+      </div>
+
+      <!-- SCENE 4: Walima Details (0.53 - 0.71) -->
+      <div class="scene" id="scene-4">
+        <div class="event-title gold-title">DAWAT – E – WALIMA</div>
+        <div class="mughal-divider"><span class="diamond"></span></div>
+        <div class="champagne-sub" style="font-size: clamp(1.1rem, 3.8vw, 1.35rem);">Insha-Allah on</div>
+        <div class="event-date">Sunday, 10 January 2027</div>
+        <div class="time-badge">TIME: 8:00 PM TO 11:00 PM</div>
+        <a href="https://calendar.google.com/calendar/render?action=TEMPLATE&text=Zaid+%26+Bushra+Walima+Ceremony&dates=20270110T143000Z/20270110T173000Z&details=Dawat-e-Walima+Ceremony+of+Zaid+%26+Bushra&location=FM+Banquet,+Goregaon+West,+Mumbai" target="_blank" class="action-btn">
+          &#128197; Add to Calendar
+        </a>
+      </div>
+
+      <!-- SCENE 5: Venue Details (0.71 - 0.86) -->
+      <div class="scene" id="scene-5">
+        <div class="venue-title gold-title">VENUE: FM BANQUET</div>
+        <div class="mughal-divider"><span class="diamond"></span></div>
+        <div class="venue-address">
+          8/B, Vir Sanghvi Marg, Near Admire Eye Care,<br>
+          Kamath Club Lane, Udyog Nagar, Goregaon West,<br>
+          Mumbai, Maharashtra 400104.
+        </div>
+        <a href="https://maps.google.com/?q=FM+Banquet+Goregaon+West+Mumbai" target="_blank" class="action-btn">
+          &#128205; Get Directions (Google Maps)
+        </a>
+      </div>
+
+      <!-- SCENE 6: Royal Closing (0.86 - 1.00) -->
+      <div class="scene" id="scene-6">
+        <div class="closing-await champagne-sub">
+          "Awaiting the pleasure of<br>your gracious presence"
+        </div>
+        <div class="mughal-divider"><span class="diamond"></span></div>
+        <div class="champagne-sub" style="font-size: clamp(0.85rem, 2.9vw, 1.1rem); letter-spacing: 2px; font-weight: 600;">
+          WITH BEST COMPLIMENTS FROM
+        </div>
+        <div class="kazi-family gold-title">Kazi Family</div>
+        <div class="champagne-sub" style="font-size: clamp(1.15rem, 3.8vw, 1.45rem);">Relatives &amp; Friends</div>
+        <a href="https://api.whatsapp.com/send?text=Warmest+congratulations+and+blessings+to+Zaid+%26+Bushra+and+the+Kazi+Family!" target="_blank" class="action-btn" style="border-color: #25D366; color: #E8FFE8;">
+          &#128172; Send Blessings via WhatsApp
+        </a>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    // -------------------------------------------------------------
+    // PLAY-BUTTON-FREE CANVAS RENDERER & 3D INTEGRATION ENGINE
+    // -------------------------------------------------------------
+    const video = document.getElementById('bg-video');
+    const palaceCanvas = document.getElementById('palace-canvas');
+    const pCtx = palaceCanvas.getContext('2d');
+    const scrollIndicator = document.getElementById('scroll-indicator');
+    const stage = document.getElementById('stage');
+    const scrubBarTrack = document.getElementById('scrub-bar-track');
+    const scrubBarFill = document.getElementById('scrub-bar-fill');
+    const scrubBarThumb = document.getElementById('scrub-bar-thumb');
+    const scrubTimeLabel = document.getElementById('scrub-time-label');
+
+    // Instant poster fallback on canvas (never shows native play button)
+    const posterImg = new Image();
+    posterImg.src = 'walima-invitation/assets/poster.jpg';
+    let isPosterReady = false;
+    posterImg.onload = () => {
+      isPosterReady = true;
+      if (video.readyState < 2) drawCover(posterImg);
+    };
+
+    function resizePalaceCanvas() {
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      palaceCanvas.width = stage.clientWidth * dpr;
+      palaceCanvas.height = stage.clientHeight * dpr;
+      if (video.readyState >= 2) {
+        drawCover(video);
+      } else if (isPosterReady) {
+        drawCover(posterImg);
+      }
+    }
+    window.addEventListener('resize', resizePalaceCanvas);
+    resizePalaceCanvas();
+
+    function drawCover(source) {
+      if (!source) return;
+      const cw = palaceCanvas.width;
+      const ch = palaceCanvas.height;
+      const sw = source.videoWidth || source.naturalWidth || source.width;
+      const sh = source.videoHeight || source.naturalHeight || source.height;
+      if (!sw || !sh || !cw || !ch) return;
+
+      const sRatio = sw / sh;
+      const cRatio = cw / ch;
+      let dw, dh, dx, dy;
+
+      if (sRatio > cRatio) {
+        dh = ch;
+        dw = ch * sRatio;
+        dx = (cw - dw) / 2;
+        dy = 0;
+      } else {
+        dw = cw;
+        dh = cw / sRatio;
+        dx = 0;
+        dy = (ch - dh) / 2;
+      }
+      pCtx.drawImage(source, dx, dy, dw, dh);
+    }
+
+    // Dynamic resolution selection: load lightweight baseline on mobile devices
+    const isMobileDevice = window.innerWidth <= 600 || /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+    if (!isMobileDevice && window.innerWidth > 900) {
+      video.src = 'walima-invitation/assets/bg_scrub.mp4';
+    }
+
+    const scenes = [
+      { id: 'scene-1', start: 0.00, end: 0.16 },
+      { id: 'scene-2', start: 0.16, end: 0.33 },
+      { id: 'scene-3', start: 0.33, end: 0.53 },
+      { id: 'scene-4', start: 0.53, end: 0.71 },
+      { id: 'scene-5', start: 0.71, end: 0.86 },
+      { id: 'scene-6', start: 0.86, end: 1.00 }
+    ];
+
+    let targetTime = 0;
+    let currentTime = 0;
+    let videoDuration = 30.0;
+    let isVideoReady = false;
+    let isSeeking = false;
+    let lastSeekTime = 0;
+
+    // Video setup & initialization
+    video.muted = true;
+    video.playsInline = true;
+
+    function markVideoReady() {
+      if (video.duration && !isNaN(video.duration)) {
+        videoDuration = video.duration;
+      }
+      isVideoReady = true;
+    }
+
+    if (video.readyState >= 1) markVideoReady();
+    video.addEventListener('loadedmetadata', markVideoReady);
+    video.addEventListener('loadeddata', markVideoReady);
+    video.addEventListener('canplay', markVideoReady);
+    video.addEventListener('seeked', () => { isSeeking = false; });
+    setTimeout(markVideoReady, 200);
+
+    // Reliable scroll progress calculation across all viewports
+    function getScrollProgress() {
+      const scrollY = window.scrollY || window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
+      const docHeight = Math.max(
+        document.body.scrollHeight,
+        document.documentElement.scrollHeight,
+        document.body.offsetHeight,
+        document.documentElement.offsetHeight,
+        document.body.clientHeight,
+        document.documentElement.clientHeight
+      );
+      const winHeight = window.innerHeight || document.documentElement.clientHeight || 800;
+      const maxScroll = docHeight - winHeight;
+      if (maxScroll <= 0) return 0;
+      const progress = scrollY / maxScroll;
+      return Math.min(1, Math.max(0, progress));
+    }
+
+    function scrollToProgress(p, smooth = true) {
+      const docHeight = Math.max(
+        document.body.scrollHeight,
+        document.documentElement.scrollHeight
+      );
+      const winHeight = window.innerHeight || 800;
+      const maxScroll = docHeight - winHeight;
+      window.scrollTo({
+        top: Math.max(0, p * maxScroll),
+        behavior: smooth ? 'smooth' : 'auto'
+      });
+    }
+
+    // Indicator tap / click
+    scrollIndicator.addEventListener('click', () => {
+      window.scrollBy({ top: window.innerHeight * 0.8, behavior: 'smooth' });
+    });
+
+    // Keyboard navigation
+    window.addEventListener('keydown', (e) => {
+      if (['ArrowDown', 'PageDown', ' '].includes(e.key)) {
+        e.preventDefault();
+        window.scrollBy({ top: window.innerHeight * 0.45, behavior: 'smooth' });
+      } else if (['ArrowUp', 'PageUp'].includes(e.key)) {
+        e.preventDefault();
+        window.scrollBy({ top: -window.innerHeight * 0.45, behavior: 'smooth' });
+      } else if (e.key === 'Home') {
+        e.preventDefault();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } else if (e.key === 'End') {
+        e.preventDefault();
+        scrollToProgress(1.0, true);
+      }
+    });
+
+    // Touch swipe support (seamless on mobile phones & tablets)
+    let touchStartY = 0;
+    let isTouching = false;
+    window.addEventListener('touchstart', (e) => {
+      if (e.touches.length > 0) {
+        touchStartY = e.touches[0].clientY;
+        isTouching = true;
+      }
+    }, { passive: true });
+
+    window.addEventListener('touchmove', (e) => {
+      if (!isTouching || e.touches.length === 0) return;
+      const currentY = e.touches[0].clientY;
+      const deltaY = touchStartY - currentY;
+      touchStartY = currentY;
+      window.scrollBy(0, deltaY * 1.3);
+    }, { passive: true });
+
+    window.addEventListener('touchend', () => { isTouching = false; }, { passive: true });
+
+    // Drag-to-scrub Timeline Bar
+    let isScrubbing = false;
+    function handleScrub(e) {
+      const rect = scrubBarTrack.getBoundingClientRect();
+      const clientX = e.clientX !== undefined ? e.clientX : (e.touches && e.touches[0].clientX) || 0;
+      const p = Math.min(1, Math.max(0, (clientX - rect.left) / rect.width));
+      scrollToProgress(p, false);
+    }
+
+    const scrubContainer = document.getElementById('scrub-bar-container');
+    scrubContainer.addEventListener('mousedown', (e) => {
+      isScrubbing = true;
+      handleScrub(e);
+    });
+    window.addEventListener('mousemove', (e) => {
+      if (isScrubbing) handleScrub(e);
+    });
+    window.addEventListener('mouseup', () => { isScrubbing = false; });
+
+    scrubContainer.addEventListener('touchstart', (e) => {
+      isScrubbing = true;
+      handleScrub(e);
+    }, { passive: true });
+    window.addEventListener('touchmove', (e) => {
+      if (isScrubbing) handleScrub(e);
+    }, { passive: true });
+    window.addEventListener('touchend', () => { isScrubbing = false; }, { passive: true });
+
+    // 3D Parallax Tilt
+    let mouseX = 0, mouseY = 0;
+    let tiltX = 0, tiltY = 0;
+
+    window.addEventListener('mousemove', (e) => {
+      const cx = window.innerWidth / 2;
+      const cy = window.innerHeight / 2;
+      mouseX = (e.clientX - cx) / cx;
+      mouseY = (e.clientY - cy) / cy;
+    });
+
+    // Main animation loop
+    function tick() {
+      const progress = getScrollProgress();
+      targetTime = progress * videoDuration;
+
+      // Smooth damping interpolation (lerp)
+      currentTime += (targetTime - currentTime) * 0.22;
+
+      // Non-blocking seek with safety timeout
+      const now = performance.now();
+      const timeDiff = Math.abs(video.currentTime - currentTime);
+      if (isVideoReady && (!isSeeking || (now - lastSeekTime > 75)) && timeDiff > 0.02) {
+        lastSeekTime = now;
+        isSeeking = true;
+        try {
+          if ('fastSeek' in video) {
+            video.fastSeek(currentTime);
+          } else {
+            video.currentTime = currentTime;
+          }
+        } catch (err) {
+          video.currentTime = currentTime;
+        }
+      }
+
+      // Draw current video frame to canvas (guaranteed play-button-free!)
+      if (video.readyState >= 2) {
+        drawCover(video);
+      } else if (isPosterReady) {
+        drawCover(posterImg);
+      }
+
+      // Update scrub bar UI
+      const pct = (progress * 100).toFixed(1);
+      scrubBarFill.style.width = pct + '%';
+      scrubBarThumb.style.left = pct + '%';
+      const curSec = Math.floor(currentTime);
+      const totalSec = Math.floor(videoDuration);
+      scrubTimeLabel.textContent = `00:${curSec < 10 ? '0' + curSec : curSec} / 00:${totalSec}`;
+
+      // Hide scroll prompt once user scrolls
+      if (progress > 0.03) {
+        scrollIndicator.style.opacity = '0';
+        scrollIndicator.style.pointerEvents = 'none';
+      } else {
+        scrollIndicator.style.opacity = '1';
+        scrollIndicator.style.pointerEvents = 'auto';
+      }
+
+      // Smooth 3D tilt
+      tiltX += (mouseY * -4 - tiltX) * 0.08;
+      tiltY += (mouseX * 4 - tiltY) * 0.08;
+      stage.style.transform = `rotateX(${tiltX}deg) rotateY(${tiltY}deg)`;
+
+      // -----------------------------------------------------------
+      // CONTINUOUS FORWARD 3D VELOCITY MATCHING PALACE CAMERA MOVE
+      // -----------------------------------------------------------
+      scenes.forEach((s, idx) => {
+        const el = document.getElementById(s.id);
+        const inWindow = progress >= s.start && progress <= s.end;
+
+        if (inWindow) {
+          el.classList.add('active');
+          const range = s.end - s.start;
+          const u = (progress - s.start) / range; // 0.0 to 1.0 within scene
+
+          // Continuous forward trajectory synced with the camera move
+          const z = -200 + (350 * u);
+          const scale = 0.72 + (0.42 * u);
+
+          let alpha = 1.0;
+          let blur = 0;
+
+          if (u < 0.22) {
+            // Fade in as it emerges from deep archway
+            const t = u / 0.22;
+            alpha = t;
+            blur = 3 * (1 - t);
+          } else if (u > 0.78) {
+            // Dissolve smoothly as it passes the camera into the next hall
+            const t = (u - 0.78) / 0.22;
+            alpha = 1 - t;
+            blur = 3 * t;
+          } else {
+            alpha = 1.0;
+            blur = 0;
+          }
+
+          el.style.opacity = Math.max(0, Math.min(1, alpha));
+          el.style.transform = `translate3d(0, 0, ${z}px) scale(${scale})`;
+          el.style.filter = blur > 0.1 ? `blur(${blur}px)` : 'none';
+
+          // Progress dot
+          document.querySelectorAll('.dot').forEach((d, i) => {
+            d.classList.toggle('active', i === idx);
+          });
+        } else {
+          el.classList.remove('active');
+          el.style.opacity = 0;
+          el.style.filter = 'none';
+        }
+      });
+
+      requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+
+    // Section dot navigation
+    document.querySelectorAll('.dot').forEach((dot) => {
+      dot.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const targetP = parseFloat(dot.getAttribute('data-progress'));
+        scrollToProgress(targetP, true);
+      });
+    });
+
+    // -------------------------------------------------------------
+    // BACKGROUND MUSIC PLAYER
+    // -------------------------------------------------------------
+    const musicBtn = document.getElementById('music-control');
+    const disc = document.getElementById('disc');
+    const musicText = document.getElementById('music-text');
+    const audio = document.getElementById('soundtrack');
+    let isPlaying = false;
+
+    musicBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (isPlaying) {
+        audio.pause();
+        disc.classList.remove('playing');
+        musicText.textContent = 'Play Music';
+        isPlaying = false;
+      } else {
+        audio.play().then(() => {
+          disc.classList.add('playing');
+          musicText.textContent = 'Playing';
+          isPlaying = true;
+        }).catch(() => {
+          musicText.textContent = 'Tap to Play';
+        });
+      }
+    });
+
+    // -------------------------------------------------------------
+    // CANVAS FLOATING PARTICLES & PETALS (High-DPI Retina support)
+    // -------------------------------------------------------------
+    const canvas = document.getElementById('particle-canvas');
+    const ctx = canvas.getContext('2d');
+    let cw, ch;
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+    function resizeParticleCanvas() {
+      cw = stage.clientWidth;
+      ch = stage.clientHeight;
+      canvas.width = cw * dpr;
+      canvas.height = ch * dpr;
+      canvas.style.width = cw + 'px';
+      canvas.style.height = ch + 'px';
+      ctx.scale(dpr, dpr);
+    }
+    window.addEventListener('resize', resizeParticleCanvas);
+    resizeParticleCanvas();
+
+    const particles = [];
+    for (let i = 0; i < 35; i++) {
+      particles.push({
+        x: Math.random() * (cw || 360),
+        y: Math.random() * (ch || 740),
+        vx: (Math.random() - 0.5) * 0.4,
+        vy: -0.3 - Math.random() * 0.5,
+        size: 1 + Math.random() * 2.2,
+        alpha: 0.2 + Math.random() * 0.7,
+        hue: Math.random() > 0.35 ? 'gold' : 'rose',
+        phase: Math.random() * Math.PI * 2
+      });
+    }
+
+    function renderParticles() {
+      ctx.clearRect(0, 0, cw, ch);
+      particles.forEach(p => {
+        p.x += p.vx + Math.sin(p.phase) * 0.2;
+        p.y += p.vy;
+        p.phase += 0.02;
+
+        if (p.y < -10) {
+          p.y = ch + 10;
+          p.x = Math.random() * cw;
+        }
+
+        ctx.save();
+        ctx.beginPath();
+        if (p.hue === 'gold') {
+          ctx.fillStyle = `rgba(255, 230, 150, ${p.alpha * 0.8})`;
+          ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+          ctx.fill();
+
+          if (p.size > 2.0) {
+            ctx.strokeStyle = `rgba(255, 250, 210, ${p.alpha * 0.6})`;
+            ctx.lineWidth = 0.8;
+            ctx.beginPath();
+            ctx.moveTo(p.x - p.size * 2, p.y);
+            ctx.lineTo(p.x + p.size * 2, p.y);
+            ctx.moveTo(p.x, p.y - p.size * 2);
+            ctx.lineTo(p.x, p.y + p.size * 2);
+            ctx.stroke();
+          }
+        } else {
+          ctx.fillStyle = `rgba(248, 180, 189, ${p.alpha * 0.7})`;
+          ctx.ellipse(p.x, p.y, p.size * 1.5, p.size * 0.85, p.phase, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        ctx.restore();
+      });
+      requestAnimationFrame(renderParticles);
+    }
+    renderParticles();
+  </script>
+</body>
+</html>

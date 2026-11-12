@@ -1,0 +1,15 @@
+# Dependencies & caches
+node_modules/
+.vercel/
+.npm/
+
+# Intermediate frame generation
+walima-invitation/anim_frames/
+walima-invitation/cards/
+walima-invitation/cards_floating/
+walima-invitation/particles/
+scratch/
+.system_generated/
+
+# Large local raw videos
+walima-invitation/assets/bg_clean.mp4
