@@ -619,17 +619,17 @@
 
   <!-- Section Dots -->
   <div id="progress-tracker">
-    <div class="dot active" data-progress="0.05" title="Bismillah"></div>
-    <div class="dot" data-progress="0.24" title="Family Invitation"></div>
-    <div class="dot" data-progress="0.43" title="Zaid & Bushra"></div>
-    <div class="dot" data-progress="0.62" title="Date & Time"></div>
-    <div class="dot" data-progress="0.78" title="Venue"></div>
-    <div class="dot" data-progress="0.94" title="Compliments"></div>
+    <div class="dot" data-progress="0.15" title="Bismillah"></div>
+    <div class="dot" data-progress="0.30" title="Family Invitation"></div>
+    <div class="dot" data-progress="0.48" title="Zaid & Bushra"></div>
+    <div class="dot" data-progress="0.65" title="Date & Time"></div>
+    <div class="dot" data-progress="0.80" title="Venue"></div>
+    <div class="dot" data-progress="0.95" title="RSVP & Blessing"></div>
   </div>
 
   <!-- Scroll Down Indicator -->
   <div id="scroll-indicator" title="Click or Scroll to Enter">
-    <span class="scroll-label">Scroll &bull; Swipe &bull; Tap to Enter</span>
+    <span class="scroll-label">Scroll to Enter Palace</span>
     <div class="scroll-arrow"></div>
   </div>
 
@@ -672,8 +672,8 @@
       <div class="corner-ornament corner-bl"></div>
       <div class="corner-ornament corner-br"></div>
 
-      <!-- SCENE 1: Sacred Opening (0.00 - 0.18) -->
-      <div class="scene active" id="scene-1">
+      <!-- SCENE 1: Sacred Opening (0.08 - 0.23: Enters After Gate Swings Open) -->
+      <div class="scene" id="scene-1">
         <div class="bismillah-emblem gold-title">&#xFDFD;</div>
         <div class="arabic-script">بِسْمِ ٱللَّٰهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ</div>
         <div class="mughal-divider"><span class="diamond"></span></div>
@@ -834,13 +834,14 @@
     }
 
     // Overlapping scene definitions for seamless cinematic crossfades
+    // Scene 1 enters AFTER the golden palace gate swings open (0.00 - 0.08)
     const scenes = [
-      { id: 'scene-1', start: 0.00, end: 0.18 },
-      { id: 'scene-2', start: 0.16, end: 0.35 },
-      { id: 'scene-3', start: 0.33, end: 0.54 },
-      { id: 'scene-4', start: 0.52, end: 0.72 },
-      { id: 'scene-5', start: 0.70, end: 0.87 },
-      { id: 'scene-6', start: 0.85, end: 1.00 }
+      { id: 'scene-1', start: 0.08, end: 0.23 },
+      { id: 'scene-2', start: 0.21, end: 0.39 },
+      { id: 'scene-3', start: 0.37, end: 0.57 },
+      { id: 'scene-4', start: 0.55, end: 0.74 },
+      { id: 'scene-5', start: 0.72, end: 0.88 },
+      { id: 'scene-6', start: 0.86, end: 1.00 }
     ];
 
     let targetTime = 0;
@@ -856,6 +857,9 @@
         videoDuration = video.duration;
       }
       isVideoReady = true;
+      if (video.readyState >= 2) {
+        drawCover(video);
+      }
     }
 
     if (video.readyState >= 1) markVideoReady();
@@ -864,7 +868,35 @@
     video.addEventListener('canplay', markVideoReady);
     setTimeout(markVideoReady, 200);
 
-    // Reliable non-blocking seek queue with safety watchdog (never locks up)
+    // Prime the video decoder on page load & first touch/scroll for instant iPhone response
+    function wakeVideo() {
+      if (video.readyState >= 1) markVideoReady();
+      if (video.paused) {
+        const p = video.play();
+        if (p !== undefined) {
+          p.then(() => {
+            video.pause();
+            drawCover(video);
+          }).catch(() => {});
+        }
+      }
+    }
+    video.addEventListener('canplay', wakeVideo, { once: true });
+    window.addEventListener('touchstart', wakeVideo, { once: true, passive: true });
+    window.addEventListener('scroll', wakeVideo, { once: true, passive: true });
+
+    // Hardware frame callback for silky-smooth 60fps GPU frame presentation
+    if ('requestVideoFrameCallback' in HTMLVideoElement.prototype) {
+      function rfcLoop() {
+        if (video.readyState >= 2) {
+          drawCover(video);
+        }
+        video.requestVideoFrameCallback(rfcLoop);
+      }
+      video.requestVideoFrameCallback(rfcLoop);
+    }
+
+    // High-performance seek queue calibrated for mobile WebKit & Chromium
     let isSeeking = false;
     let pendingTime = null;
     let lastSeekTime = 0;
@@ -872,18 +904,26 @@
     function performSeek(t) {
       if (!isVideoReady) return;
       const now = performance.now();
-      // Watchdog: If seeking takes longer than 100ms, unlock decoder
-      if (isSeeking && now - lastSeekTime > 100) {
-        isSeeking = false;
-      }
+
+      // Only unlock if a seek has hung for > 400ms (never abort active mobile decodes)
       if (isSeeking) {
-        pendingTime = t;
-        return;
+        if (now - lastSeekTime > 400) {
+          isSeeking = false;
+        } else {
+          pendingTime = t;
+          return;
+        }
       }
+
       isSeeking = true;
       lastSeekTime = now;
+
       try {
-        video.currentTime = t;
+        if (typeof video.fastSeek === 'function') {
+          video.fastSeek(t);
+        } else {
+          video.currentTime = t;
+        }
       } catch (err) {
         isSeeking = false;
       }
@@ -1102,21 +1142,18 @@
           const scale = 0.78 + (0.36 * u);
 
           // Smooth mathematical sine curve:
-          // Special rule for Scene 1 (Opening): starts fully visible at top (u=0)
-          // Special rule for Scene 6 (Closing): STAYS fully visible at bottom (u=1) with zero jitter!
+          // Scene 1 enters and fades in gracefully right after the gate opens
+          // Scene 6 (Closing) STAYS fully visible at bottom (u=1) with zero jitter
           let alpha = 1.0;
-          if (idx === 0) {
-            // First scene: Visible at start, dissolves when moving forward
-            alpha = (u > 0.65) ? Math.cos(((u - 0.65) / 0.35) * (Math.PI / 2)) : 1.0;
-          } else if (idx === scenes.length - 1) {
-            // Last scene: Eases in, STAYS at 1.0 at the end of the scroll (no flickering / no vanishing!)
+          if (idx === scenes.length - 1) {
+            // Last scene: Eases in, STAYS at 1.0 at the end of the scroll
             alpha = (u < 0.35) ? Math.sin((u / 0.35) * (Math.PI / 2)) : 1.0;
           } else {
-            // Middle scenes: Graceful bell-curve sine fade
-            if (u < 0.32) {
-              alpha = Math.sin((u / 0.32) * (Math.PI / 2));
-            } else if (u > 0.68) {
-              alpha = Math.cos(((u - 0.68) / 0.32) * (Math.PI / 2));
+            // Scenes fade in gently, hold royal brilliance, and fade out smoothly
+            if (u < 0.30) {
+              alpha = Math.sin((u / 0.30) * (Math.PI / 2));
+            } else if (u > 0.70) {
+              alpha = Math.cos(((u - 0.70) / 0.30) * (Math.PI / 2));
             } else {
               alpha = 1.0;
             }
@@ -1125,8 +1162,8 @@
           el.style.opacity = Math.max(0, Math.min(1, alpha));
           el.style.transform = `translate3d(0, 0, ${z}px) scale(${scale})`;
 
-          // Progress dot
-          if (u >= 0.25 && u <= 0.75) {
+          // Progress dot indicator sync
+          if (u >= 0.20 && u <= 0.80) {
             document.querySelectorAll('.dot').forEach((d, i) => {
               d.classList.toggle('active', i === idx);
             });
@@ -1136,6 +1173,11 @@
           el.style.opacity = 0;
         }
       });
+
+      // Clear dots when outside the gate before entering
+      if (progress < 0.07) {
+        document.querySelectorAll('.dot').forEach(d => d.classList.remove('active'));
+      }
 
       renderParticles();
       requestAnimationFrame(tick);
