@@ -33,6 +33,7 @@
       background-color: var(--bg-dark);
       overflow-x: hidden;
       scroll-behavior: auto;
+      -webkit-overflow-scrolling: touch;
     }
 
     body {
@@ -43,13 +44,14 @@
       font-family: 'Cormorant Garamond', Georgia, serif;
       overflow-x: hidden;
       user-select: none;
+      -webkit-user-select: none;
       -webkit-font-smoothing: antialiased;
       cursor: default;
     }
 
-    /* Scroll track to drive 30s video scrub */
+    /* Scroll track to drive 30s video scrub - tuned for buttery mobile momentum */
     #scroll-track {
-      height: 5200px;
+      height: 4200px;
       width: 100%;
       position: relative;
       pointer-events: none;
@@ -93,16 +95,16 @@
       }
     }
 
-    /* Hardware-Accelerated Canvas Renderer (100% Immune to Safari/Chrome Play Buttons) */
+    /* Hardware-Accelerated Canvas Renderer (100% Immune to Safari/Chrome Play Buttons & Jitter) */
     #palace-canvas {
       position: absolute;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
-      object-fit: cover;
       pointer-events: none;
       z-index: 2;
+      transform: translateZ(0);
     }
 
     /* Hidden background video decoder */
@@ -137,6 +139,7 @@
       height: 100%;
       pointer-events: none;
       z-index: 6;
+      transform: translateZ(0);
     }
 
     /* Royal Ornamental Frame Border (Pure antique gold, transparent center) */
@@ -186,7 +189,8 @@
       pointer-events: none;
       z-index: 10;
       transform-style: preserve-3d;
-      will-change: transform, opacity, filter;
+      will-change: transform, opacity;
+      transition: opacity 0.2s ease-out;
     }
 
     .scene.active {
@@ -226,7 +230,7 @@
       position: absolute;
       width: 85%;
       height: 70%;
-      background: radial-gradient(ellipse at center, rgba(255, 225, 150, 0.09) 0%, transparent 70%);
+      background: radial-gradient(ellipse at center, rgba(255, 225, 150, 0.08) 0%, transparent 70%);
       pointer-events: none;
       z-index: -1;
     }
@@ -633,7 +637,7 @@
     <div id="scrub-time-label">00:00 / 00:30</div>
   </div>
 
-  <!-- Scroll Height Track (Drives document scrolling) -->
+  <!-- Scroll Height Track (Drives document scrolling natively) -->
   <div id="scroll-track"></div>
 
   <!-- 3D Fixed Viewport -->
@@ -663,7 +667,7 @@
       <div class="corner-ornament corner-bl"></div>
       <div class="corner-ornament corner-br"></div>
 
-      <!-- SCENE 1: Sacred Opening (0.00 - 0.16) -->
+      <!-- SCENE 1: Sacred Opening (0.00 - 0.18) -->
       <div class="scene active" id="scene-1">
         <div class="bismillah-emblem gold-title">&#xFDFD;</div>
         <div class="arabic-script">بِسْمِ ٱللَّٰهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ</div>
@@ -671,7 +675,7 @@
         <div class="champagne-sub mercy-sub">With the Mercy of Allah (SWT)</div>
       </div>
 
-      <!-- SCENE 2: Family Invitation (0.16 - 0.33) -->
+      <!-- SCENE 2: Family Invitation (0.16 - 0.35) -->
       <div class="scene" id="scene-2">
         <div class="champagne-sub" style="font-size: clamp(1.1rem, 3.8vw, 1.35rem);">And the blessings of</div>
         <div class="mughal-divider"><span class="diamond"></span></div>
@@ -686,7 +690,7 @@
         </div>
       </div>
 
-      <!-- SCENE 3: Grand Couple Reveal (0.33 - 0.53) -->
+      <!-- SCENE 3: Grand Couple Reveal (0.33 - 0.55) -->
       <div class="scene" id="scene-3">
         <div class="couple-badge champagne-sub">WALIMA CELEBRATION</div>
         <div class="mughal-divider"><span class="diamond"></span></div>
@@ -699,7 +703,7 @@
         </div>
       </div>
 
-      <!-- SCENE 4: Walima Details (0.53 - 0.71) -->
+      <!-- SCENE 4: Walima Details (0.53 - 0.73) -->
       <div class="scene" id="scene-4">
         <div class="event-title gold-title">DAWAT – E – WALIMA</div>
         <div class="mughal-divider"><span class="diamond"></span></div>
@@ -711,7 +715,7 @@
         </a>
       </div>
 
-      <!-- SCENE 5: Venue Details (0.71 - 0.86) -->
+      <!-- SCENE 5: Venue Details (0.71 - 0.88) -->
       <div class="scene" id="scene-5">
         <div class="venue-title gold-title">VENUE: FM BANQUET</div>
         <div class="mughal-divider"><span class="diamond"></span></div>
@@ -746,7 +750,7 @@
 
   <script>
     // -------------------------------------------------------------
-    // PLAY-BUTTON-FREE CANVAS RENDERER & 3D INTEGRATION ENGINE
+    // BUTTERY-SMOOTH MOBILE & DESKTOP ENGINE (NO SHAKING / NO JITTER)
     // -------------------------------------------------------------
     const video = document.getElementById('bg-video');
     const palaceCanvas = document.getElementById('palace-canvas');
@@ -758,7 +762,9 @@
     const scrubBarThumb = document.getElementById('scrub-bar-thumb');
     const scrubTimeLabel = document.getElementById('scrub-time-label');
 
-    // Instant poster fallback on canvas (never shows native play button)
+    const isMobileDevice = window.innerWidth <= 600 || /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+    // Instant poster fallback on canvas
     const posterImg = new Image();
     posterImg.src = 'walima-invitation/assets/poster.jpg';
     let isPosterReady = false;
@@ -769,8 +775,8 @@
 
     function resizePalaceCanvas() {
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
-      palaceCanvas.width = stage.clientWidth * dpr;
-      palaceCanvas.height = stage.clientHeight * dpr;
+      palaceCanvas.width = Math.round(stage.clientWidth * dpr);
+      palaceCanvas.height = Math.round(stage.clientHeight * dpr);
       if (video.readyState >= 2) {
         drawCover(video);
       } else if (isPosterReady) {
@@ -794,30 +800,29 @@
 
       if (sRatio > cRatio) {
         dh = ch;
-        dw = ch * sRatio;
-        dx = (cw - dw) / 2;
+        dw = Math.round(ch * sRatio);
+        dx = Math.round((cw - dw) / 2);
         dy = 0;
       } else {
         dw = cw;
-        dh = cw / sRatio;
+        dh = Math.round(cw / sRatio);
         dx = 0;
-        dy = (ch - dh) / 2;
+        dy = Math.round((ch - dh) / 2);
       }
       pCtx.drawImage(source, dx, dy, dw, dh);
     }
 
-    // Dynamic resolution selection: load lightweight baseline on mobile devices
-    const isMobileDevice = window.innerWidth <= 600 || /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
     if (!isMobileDevice && window.innerWidth > 900) {
       video.src = 'walima-invitation/assets/bg_scrub.mp4';
     }
 
+    // Overlapping scene definitions for seamless cinematic crossfades
     const scenes = [
-      { id: 'scene-1', start: 0.00, end: 0.16 },
-      { id: 'scene-2', start: 0.16, end: 0.33 },
-      { id: 'scene-3', start: 0.33, end: 0.53 },
-      { id: 'scene-4', start: 0.53, end: 0.71 },
-      { id: 'scene-5', start: 0.71, end: 0.86 },
+      { id: 'scene-1', start: 0.00, end: 0.18 },
+      { id: 'scene-2', start: 0.16, end: 0.35 },
+      { id: 'scene-3', start: 0.33, end: 0.55 },
+      { id: 'scene-4', start: 0.53, end: 0.73 },
+      { id: 'scene-5', start: 0.71, end: 0.88 },
       { id: 'scene-6', start: 0.86, end: 1.00 }
     ];
 
@@ -828,7 +833,6 @@
     let isSeeking = false;
     let lastSeekTime = 0;
 
-    // Video setup & initialization
     video.muted = true;
     video.playsInline = true;
 
@@ -843,10 +847,13 @@
     video.addEventListener('loadedmetadata', markVideoReady);
     video.addEventListener('loadeddata', markVideoReady);
     video.addEventListener('canplay', markVideoReady);
-    video.addEventListener('seeked', () => { isSeeking = false; });
+    video.addEventListener('seeked', () => {
+      isSeeking = false;
+      drawCover(video);
+    });
     setTimeout(markVideoReady, 200);
 
-    // Reliable scroll progress calculation across all viewports
+    // Reliable scroll progress calculation across all browsers
     function getScrollProgress() {
       const scrollY = window.scrollY || window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
       const docHeight = Math.max(
@@ -899,25 +906,7 @@
       }
     });
 
-    // Touch swipe support (seamless on mobile phones & tablets)
-    let touchStartY = 0;
-    let isTouching = false;
-    window.addEventListener('touchstart', (e) => {
-      if (e.touches.length > 0) {
-        touchStartY = e.touches[0].clientY;
-        isTouching = true;
-      }
-    }, { passive: true });
-
-    window.addEventListener('touchmove', (e) => {
-      if (!isTouching || e.touches.length === 0) return;
-      const currentY = e.touches[0].clientY;
-      const deltaY = touchStartY - currentY;
-      touchStartY = currentY;
-      window.scrollBy(0, deltaY * 1.3);
-    }, { passive: true });
-
-    window.addEventListener('touchend', () => { isTouching = false; }, { passive: true });
+    // Native mobile touch is preserved 100% untouched to ensure buttery 60/120fps scrolling!
 
     // Drag-to-scrub Timeline Bar
     let isScrubbing = false;
@@ -947,43 +936,39 @@
     }, { passive: true });
     window.addEventListener('touchend', () => { isScrubbing = false; }, { passive: true });
 
-    // 3D Parallax Tilt
+    // 3D Parallax Tilt (Only on desktop to prevent mobile GPU re-rasterization jitter)
     let mouseX = 0, mouseY = 0;
     let tiltX = 0, tiltY = 0;
 
-    window.addEventListener('mousemove', (e) => {
-      const cx = window.innerWidth / 2;
-      const cy = window.innerHeight / 2;
-      mouseX = (e.clientX - cx) / cx;
-      mouseY = (e.clientY - cy) / cy;
-    });
+    if (!isMobileDevice) {
+      window.addEventListener('mousemove', (e) => {
+        const cx = window.innerWidth / 2;
+        const cy = window.innerHeight / 2;
+        mouseX = (e.clientX - cx) / cx;
+        mouseY = (e.clientY - cy) / cy;
+      });
+    }
 
     // Main animation loop
     function tick() {
       const progress = getScrollProgress();
       targetTime = progress * videoDuration;
 
-      // Smooth damping interpolation (lerp)
-      currentTime += (targetTime - currentTime) * 0.22;
+      // Silky damping interpolation
+      currentTime += (targetTime - currentTime) * 0.16;
 
-      // Non-blocking seek with safety timeout
+      // Stable non-blocking video seeking (no fastSeek snap jitter)
       const now = performance.now();
       const timeDiff = Math.abs(video.currentTime - currentTime);
-      if (isVideoReady && (!isSeeking || (now - lastSeekTime > 75)) && timeDiff > 0.02) {
+      if (isVideoReady && (!isSeeking || (now - lastSeekTime > 90)) && timeDiff > 0.03) {
         lastSeekTime = now;
         isSeeking = true;
         try {
-          if ('fastSeek' in video) {
-            video.fastSeek(currentTime);
-          } else {
-            video.currentTime = currentTime;
-          }
-        } catch (err) {
           video.currentTime = currentTime;
-        }
+        } catch (err) {}
       }
 
-      // Draw current video frame to canvas (guaranteed play-button-free!)
+      // Draw current video frame to canvas
       if (video.readyState >= 2) {
         drawCover(video);
       } else if (isPosterReady) {
@@ -1007,13 +992,15 @@
         scrollIndicator.style.pointerEvents = 'auto';
       }
 
-      // Smooth 3D tilt
-      tiltX += (mouseY * -4 - tiltX) * 0.08;
-      tiltY += (mouseX * 4 - tiltY) * 0.08;
-      stage.style.transform = `rotateX(${tiltX}deg) rotateY(${tiltY}deg)`;
+      // 3D tilt only on desktop
+      if (!isMobileDevice) {
+        tiltX += (mouseY * -4 - tiltX) * 0.08;
+        tiltY += (mouseX * 4 - tiltY) * 0.08;
+        stage.style.transform = `rotateX(${tiltX}deg) rotateY(${tiltY}deg)`;
+      }
 
       // -----------------------------------------------------------
-      // CONTINUOUS FORWARD 3D VELOCITY MATCHING PALACE CAMERA MOVE
+      // CONTINUOUS FORWARD 3D VELOCITY & SMOOTH SCENE CROSSFADES
       // -----------------------------------------------------------
       scenes.forEach((s, idx) => {
         const el = document.getElementById(s.id);
@@ -1024,40 +1011,32 @@
           const range = s.end - s.start;
           const u = (progress - s.start) / range; // 0.0 to 1.0 within scene
 
-          // Continuous forward trajectory synced with the camera move
-          const z = -200 + (350 * u);
-          const scale = 0.72 + (0.42 * u);
+          // Continuous forward 3D trajectory synced with camera move
+          const z = -180 + (320 * u);
+          const scale = 0.75 + (0.35 * u);
 
+          // Smooth bell-curve alpha so text flows in, stays readable, and gracefully dissolves
           let alpha = 1.0;
-          let blur = 0;
-
-          if (u < 0.22) {
-            // Fade in as it emerges from deep archway
-            const t = u / 0.22;
-            alpha = t;
-            blur = 3 * (1 - t);
-          } else if (u > 0.78) {
-            // Dissolve smoothly as it passes the camera into the next hall
-            const t = (u - 0.78) / 0.22;
-            alpha = 1 - t;
-            blur = 3 * t;
+          if (u < 0.28) {
+            alpha = u / 0.28;
+          } else if (u > 0.72) {
+            alpha = (1.0 - u) / 0.28;
           } else {
             alpha = 1.0;
-            blur = 0;
           }
 
           el.style.opacity = Math.max(0, Math.min(1, alpha));
           el.style.transform = `translate3d(0, 0, ${z}px) scale(${scale})`;
-          el.style.filter = blur > 0.1 ? `blur(${blur}px)` : 'none';
 
           // Progress dot
-          document.querySelectorAll('.dot').forEach((d, i) => {
-            d.classList.toggle('active', i === idx);
-          });
+          if (u >= 0.25 && u <= 0.75) {
+            document.querySelectorAll('.dot').forEach((d, i) => {
+              d.classList.toggle('active', i === idx);
+            });
+          }
         } else {
           el.classList.remove('active');
           el.style.opacity = 0;
-          el.style.filter = 'none';
         }
       });
 
@@ -1112,8 +1091,8 @@
     function resizeParticleCanvas() {
       cw = stage.clientWidth;
       ch = stage.clientHeight;
-      canvas.width = cw * dpr;
-      canvas.height = ch * dpr;
+      canvas.width = Math.round(cw * dpr);
+      canvas.height = Math.round(ch * dpr);
       canvas.style.width = cw + 'px';
       canvas.style.height = ch + 'px';
       ctx.scale(dpr, dpr);
