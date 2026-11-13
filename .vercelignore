@@ -1,0 +1,25 @@
+# Ignore all other projects and heavy footage
+baby-shower-reel/
+paidvine-17s-reel/
+paidvine-20s-scroll-reel/
+paidvine-21s-waiting-reel/
+paidvine-reel/
+paidvine-referral-reel/
+scratch/
+.agents/
+.git/
+.vercel/
+
+# Ignore intermediate animation frames and heavy unneeded assets
+walima-invitation/anim_frames/
+walima-invitation/cards/
+walima-invitation/cards_floating/
+walima-invitation/particles/
+walima-invitation/assets/bg_clean.mp4
+
+# Ignore scripts
+*.js
+*.bat
+*.mp4
+!walima-invitation/assets/bg_mobile.mp4
+!walima-invitation/assets/bg_scrub.mp4
