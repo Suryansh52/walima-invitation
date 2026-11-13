@@ -3,6 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
   <title>Zaid &amp; Bushra — Royal Walima Invitation</title>
   
   <!-- Premium Fonts -->
@@ -51,7 +54,7 @@
 
     /* Scroll track to drive 30s video scrub - tuned for buttery mobile momentum */
     #scroll-track {
-      height: 4200px;
+      height: 4000px;
       width: 100%;
       position: relative;
       pointer-events: none;
@@ -190,7 +193,7 @@
       z-index: 10;
       transform-style: preserve-3d;
       will-change: transform, opacity;
-      transition: opacity 0.2s ease-out;
+      /* Notice: Zero conflicting CSS transitions to prevent JS fight/lag */
     }
 
     .scene.active {
@@ -667,7 +670,7 @@
       <div class="corner-ornament corner-bl"></div>
       <div class="corner-ornament corner-br"></div>
 
-      <!-- SCENE 1: Sacred Opening (0.00 - 0.18) -->
+      <!-- SCENE 1: Sacred Opening (0.00 - 0.17) -->
       <div class="scene active" id="scene-1">
         <div class="bismillah-emblem gold-title">&#xFDFD;</div>
         <div class="arabic-script">بِسْمِ ٱللَّٰهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ</div>
@@ -675,7 +678,7 @@
         <div class="champagne-sub mercy-sub">With the Mercy of Allah (SWT)</div>
       </div>
 
-      <!-- SCENE 2: Family Invitation (0.16 - 0.35) -->
+      <!-- SCENE 2: Family Invitation (0.15 - 0.34) -->
       <div class="scene" id="scene-2">
         <div class="champagne-sub" style="font-size: clamp(1.1rem, 3.8vw, 1.35rem);">And the blessings of</div>
         <div class="mughal-divider"><span class="diamond"></span></div>
@@ -690,7 +693,7 @@
         </div>
       </div>
 
-      <!-- SCENE 3: Grand Couple Reveal (0.33 - 0.55) -->
+      <!-- SCENE 3: Grand Couple Reveal (0.32 - 0.53) -->
       <div class="scene" id="scene-3">
         <div class="couple-badge champagne-sub">WALIMA CELEBRATION</div>
         <div class="mughal-divider"><span class="diamond"></span></div>
@@ -703,7 +706,7 @@
         </div>
       </div>
 
-      <!-- SCENE 4: Walima Details (0.53 - 0.73) -->
+      <!-- SCENE 4: Walima Details (0.51 - 0.72) -->
       <div class="scene" id="scene-4">
         <div class="event-title gold-title">DAWAT – E – WALIMA</div>
         <div class="mughal-divider"><span class="diamond"></span></div>
@@ -715,7 +718,7 @@
         </a>
       </div>
 
-      <!-- SCENE 5: Venue Details (0.71 - 0.88) -->
+      <!-- SCENE 5: Venue Details (0.70 - 0.87) -->
       <div class="scene" id="scene-5">
         <div class="venue-title gold-title">VENUE: FM BANQUET</div>
         <div class="mughal-divider"><span class="diamond"></span></div>
@@ -729,7 +732,7 @@
         </a>
       </div>
 
-      <!-- SCENE 6: Royal Closing (0.86 - 1.00) -->
+      <!-- SCENE 6: Royal Closing (0.85 - 1.00) -->
       <div class="scene" id="scene-6">
         <div class="closing-await champagne-sub">
           "Awaiting the pleasure of<br>your gracious presence"
@@ -755,6 +758,8 @@
     const video = document.getElementById('bg-video');
     const palaceCanvas = document.getElementById('palace-canvas');
     const pCtx = palaceCanvas.getContext('2d');
+    const particleCanvas = document.getElementById('particle-canvas');
+    const ptCtx = particleCanvas.getContext('2d');
     const scrollIndicator = document.getElementById('scroll-indicator');
     const stage = document.getElementById('stage');
     const scrubBarTrack = document.getElementById('scrub-bar-track');
@@ -773,41 +778,51 @@
       if (video.readyState < 2) drawCover(posterImg);
     };
 
-    function resizePalaceCanvas() {
+    let cw = 0, ch = 0;
+    function resizeCanvases() {
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
-      palaceCanvas.width = Math.round(stage.clientWidth * dpr);
-      palaceCanvas.height = Math.round(stage.clientHeight * dpr);
+      cw = stage.clientWidth;
+      ch = stage.clientHeight;
+
+      palaceCanvas.width = Math.round(cw * dpr);
+      palaceCanvas.height = Math.round(ch * dpr);
+      particleCanvas.width = Math.round(cw * dpr);
+      particleCanvas.height = Math.round(ch * dpr);
+      particleCanvas.style.width = cw + 'px';
+      particleCanvas.style.height = ch + 'px';
+      ptCtx.scale(dpr, dpr);
+
       if (video.readyState >= 2) {
         drawCover(video);
       } else if (isPosterReady) {
         drawCover(posterImg);
       }
     }
-    window.addEventListener('resize', resizePalaceCanvas);
-    resizePalaceCanvas();
+    window.addEventListener('resize', resizeCanvases);
+    resizeCanvases();
 
     function drawCover(source) {
       if (!source) return;
-      const cw = palaceCanvas.width;
-      const ch = palaceCanvas.height;
+      const canvasW = palaceCanvas.width;
+      const canvasH = palaceCanvas.height;
       const sw = source.videoWidth || source.naturalWidth || source.width;
       const sh = source.videoHeight || source.naturalHeight || source.height;
-      if (!sw || !sh || !cw || !ch) return;
+      if (!sw || !sh || !canvasW || !canvasH) return;
 
       const sRatio = sw / sh;
-      const cRatio = cw / ch;
+      const cRatio = canvasW / canvasH;
       let dw, dh, dx, dy;
 
       if (sRatio > cRatio) {
-        dh = ch;
-        dw = Math.round(ch * sRatio);
-        dx = Math.round((cw - dw) / 2);
+        dh = canvasH;
+        dw = Math.round(canvasH * sRatio);
+        dx = Math.round((canvasW - dw) / 2);
         dy = 0;
       } else {
-        dw = cw;
-        dh = Math.round(cw / sRatio);
+        dw = canvasW;
+        dh = Math.round(canvasW / sRatio);
         dx = 0;
-        dy = Math.round((ch - dh) / 2);
+        dy = Math.round((canvasH - dh) / 2);
       }
       pCtx.drawImage(source, dx, dy, dw, dh);
     }
@@ -818,20 +833,18 @@
 
     // Overlapping scene definitions for seamless cinematic crossfades
     const scenes = [
-      { id: 'scene-1', start: 0.00, end: 0.18 },
-      { id: 'scene-2', start: 0.16, end: 0.35 },
-      { id: 'scene-3', start: 0.33, end: 0.55 },
-      { id: 'scene-4', start: 0.53, end: 0.73 },
-      { id: 'scene-5', start: 0.71, end: 0.88 },
-      { id: 'scene-6', start: 0.86, end: 1.00 }
+      { id: 'scene-1', start: 0.00, end: 0.17 },
+      { id: 'scene-2', start: 0.15, end: 0.34 },
+      { id: 'scene-3', start: 0.32, end: 0.53 },
+      { id: 'scene-4', start: 0.51, end: 0.72 },
+      { id: 'scene-5', start: 0.70, end: 0.87 },
+      { id: 'scene-6', start: 0.85, end: 1.00 }
     ];
 
     let targetTime = 0;
     let currentTime = 0;
     let videoDuration = 30.0;
     let isVideoReady = false;
-    let isSeeking = false;
-    let lastSeekTime = 0;
 
     video.muted = true;
     video.playsInline = true;
@@ -847,11 +860,35 @@
     video.addEventListener('loadedmetadata', markVideoReady);
     video.addEventListener('loadeddata', markVideoReady);
     video.addEventListener('canplay', markVideoReady);
+    setTimeout(markVideoReady, 200);
+
+    // Reliable non-blocking seek queue (eliminates decoder shaking/vibration)
+    let isSeeking = false;
+    let pendingTime = null;
+
+    function performSeek(t) {
+      if (!isVideoReady) return;
+      if (isSeeking) {
+        pendingTime = t;
+        return;
+      }
+      isSeeking = true;
+      try {
+        video.currentTime = t;
+      } catch (err) {
+        isSeeking = false;
+      }
+    }
+
     video.addEventListener('seeked', () => {
       isSeeking = false;
       drawCover(video);
+      if (pendingTime !== null) {
+        const nextT = pendingTime;
+        pendingTime = null;
+        performSeek(nextT);
+      }
     });
-    setTimeout(markVideoReady, 200);
 
     // Reliable scroll progress calculation across all browsers
     function getScrollProgress() {
@@ -906,8 +943,6 @@
       }
     });
 
-    // Native mobile touch is preserved 100% untouched to ensure buttery 60/120fps scrolling!
-
     // Drag-to-scrub Timeline Bar
     let isScrubbing = false;
     function handleScrub(e) {
@@ -936,43 +971,83 @@
     }, { passive: true });
     window.addEventListener('touchend', () => { isScrubbing = false; }, { passive: true });
 
-    // 3D Parallax Tilt (Only on desktop to prevent mobile GPU re-rasterization jitter)
+    // 3D Parallax Tilt (Only on desktop)
     let mouseX = 0, mouseY = 0;
     let tiltX = 0, tiltY = 0;
 
     if (!isMobileDevice) {
       window.addEventListener('mousemove', (e) => {
-        const cx = window.innerWidth / 2;
-        const cy = window.innerHeight / 2;
-        mouseX = (e.clientX - cx) / cx;
-        mouseY = (e.clientY - cy) / cy;
+        const centerCX = window.innerWidth / 2;
+        const centerCY = window.innerHeight / 2;
+        mouseX = (e.clientX - centerCX) / centerCX;
+        mouseY = (e.clientY - centerCY) / centerCY;
       });
     }
 
-    // Main animation loop
+    // Floating Golden Particles
+    const particles = [];
+    for (let i = 0; i < 32; i++) {
+      particles.push({
+        x: Math.random() * (cw || 360),
+        y: Math.random() * (ch || 740),
+        vx: (Math.random() - 0.5) * 0.35,
+        vy: -0.25 - Math.random() * 0.45,
+        size: 1 + Math.random() * 2.2,
+        alpha: 0.2 + Math.random() * 0.7,
+        hue: Math.random() > 0.35 ? 'gold' : 'rose',
+        phase: Math.random() * Math.PI * 2
+      });
+    }
+
+    function renderParticles() {
+      ptCtx.clearRect(0, 0, cw, ch);
+      particles.forEach(p => {
+        p.x += p.vx + Math.sin(p.phase) * 0.2;
+        p.y += p.vy;
+        p.phase += 0.02;
+
+        if (p.y < -10) {
+          p.y = ch + 10;
+          p.x = Math.random() * cw;
+        }
+
+        ptCtx.save();
+        ptCtx.beginPath();
+        if (p.hue === 'gold') {
+          ptCtx.fillStyle = `rgba(255, 230, 150, ${p.alpha * 0.8})`;
+          ptCtx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+          ptCtx.fill();
+
+          if (p.size > 2.0) {
+            ptCtx.strokeStyle = `rgba(255, 250, 210, ${p.alpha * 0.6})`;
+            ptCtx.lineWidth = 0.8;
+            ptCtx.beginPath();
+            ptCtx.moveTo(p.x - p.size * 2, p.y);
+            ptCtx.lineTo(p.x + p.size * 2, p.y);
+            ptCtx.moveTo(p.x, p.y - p.size * 2);
+            ptCtx.lineTo(p.x, p.y + p.size * 2);
+            ptCtx.stroke();
+          }
+        } else {
+          ptCtx.fillStyle = `rgba(248, 180, 189, ${p.alpha * 0.7})`;
+          ptCtx.ellipse(p.x, p.y, p.size * 1.5, p.size * 0.85, p.phase, 0, Math.PI * 2);
+          ptCtx.fill();
+        }
+        ptCtx.restore();
+      });
+    }
+
+    // Unified 60fps Animation Loop
     function tick() {
       const progress = getScrollProgress();
       targetTime = progress * videoDuration;
 
-      // Silky damping interpolation
-      currentTime += (targetTime - currentTime) * 0.16;
+      // Silky smooth damping interpolation
+      currentTime += (targetTime - currentTime) * 0.18;
 
-      // Stable non-blocking video seeking (no fastSeek snap jitter)
-      const now = performance.now();
-      const timeDiff = Math.abs(video.currentTime - currentTime);
-      if (isVideoReady && (!isSeeking || (now - lastSeekTime > 90)) && timeDiff > 0.03) {
-        lastSeekTime = now;
-        isSeeking = true;
-        try {
-          video.currentTime = currentTime;
-        } catch (err) {}
-      }
-
-      // Draw current video frame to canvas
-      if (video.readyState >= 2) {
-        drawCover(video);
-      } else if (isPosterReady) {
-        drawCover(posterImg);
+      // Queue clean frame seek without jitter
+      if (Math.abs(video.currentTime - currentTime) > 0.04) {
+        performSeek(currentTime);
       }
 
       // Update scrub bar UI
@@ -1000,7 +1075,7 @@
       }
 
       // -----------------------------------------------------------
-      // CONTINUOUS FORWARD 3D VELOCITY & SMOOTH SCENE CROSSFADES
+      // CONTINUOUS FORWARD 3D VELOCITY & SINE-CURVE CROSSFADES
       // -----------------------------------------------------------
       scenes.forEach((s, idx) => {
         const el = document.getElementById(s.id);
@@ -1012,15 +1087,15 @@
           const u = (progress - s.start) / range; // 0.0 to 1.0 within scene
 
           // Continuous forward 3D trajectory synced with camera move
-          const z = -180 + (320 * u);
-          const scale = 0.75 + (0.35 * u);
+          const z = -160 + (320 * u);
+          const scale = 0.78 + (0.36 * u);
 
-          // Smooth bell-curve alpha so text flows in, stays readable, and gracefully dissolves
+          // Smooth mathematical sine curve for seamless fade-in / fade-out
           let alpha = 1.0;
-          if (u < 0.28) {
-            alpha = u / 0.28;
-          } else if (u > 0.72) {
-            alpha = (1.0 - u) / 0.28;
+          if (u < 0.32) {
+            alpha = Math.sin((u / 0.32) * (Math.PI / 2));
+          } else if (u > 0.68) {
+            alpha = Math.cos(((u - 0.68) / 0.32) * (Math.PI / 2));
           } else {
             alpha = 1.0;
           }
@@ -1040,6 +1115,7 @@
         }
       });
 
+      renderParticles();
       requestAnimationFrame(tick);
     }
     requestAnimationFrame(tick);
@@ -1079,80 +1155,6 @@
         });
       }
     });
-
-    // -------------------------------------------------------------
-    // CANVAS FLOATING PARTICLES & PETALS (High-DPI Retina support)
-    // -------------------------------------------------------------
-    const canvas = document.getElementById('particle-canvas');
-    const ctx = canvas.getContext('2d');
-    let cw, ch;
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
-
-    function resizeParticleCanvas() {
-      cw = stage.clientWidth;
-      ch = stage.clientHeight;
-      canvas.width = Math.round(cw * dpr);
-      canvas.height = Math.round(ch * dpr);
-      canvas.style.width = cw + 'px';
-      canvas.style.height = ch + 'px';
-      ctx.scale(dpr, dpr);
-    }
-    window.addEventListener('resize', resizeParticleCanvas);
-    resizeParticleCanvas();
-
-    const particles = [];
-    for (let i = 0; i < 35; i++) {
-      particles.push({
-        x: Math.random() * (cw || 360),
-        y: Math.random() * (ch || 740),
-        vx: (Math.random() - 0.5) * 0.4,
-        vy: -0.3 - Math.random() * 0.5,
-        size: 1 + Math.random() * 2.2,
-        alpha: 0.2 + Math.random() * 0.7,
-        hue: Math.random() > 0.35 ? 'gold' : 'rose',
-        phase: Math.random() * Math.PI * 2
-      });
-    }
-
-    function renderParticles() {
-      ctx.clearRect(0, 0, cw, ch);
-      particles.forEach(p => {
-        p.x += p.vx + Math.sin(p.phase) * 0.2;
-        p.y += p.vy;
-        p.phase += 0.02;
-
-        if (p.y < -10) {
-          p.y = ch + 10;
-          p.x = Math.random() * cw;
-        }
-
-        ctx.save();
-        ctx.beginPath();
-        if (p.hue === 'gold') {
-          ctx.fillStyle = `rgba(255, 230, 150, ${p.alpha * 0.8})`;
-          ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-          ctx.fill();
-
-          if (p.size > 2.0) {
-            ctx.strokeStyle = `rgba(255, 250, 210, ${p.alpha * 0.6})`;
-            ctx.lineWidth = 0.8;
-            ctx.beginPath();
-            ctx.moveTo(p.x - p.size * 2, p.y);
-            ctx.lineTo(p.x + p.size * 2, p.y);
-            ctx.moveTo(p.x, p.y - p.size * 2);
-            ctx.lineTo(p.x, p.y + p.size * 2);
-            ctx.stroke();
-          }
-        } else {
-          ctx.fillStyle = `rgba(248, 180, 189, ${p.alpha * 0.7})`;
-          ctx.ellipse(p.x, p.y, p.size * 1.5, p.size * 0.85, p.phase, 0, Math.PI * 2);
-          ctx.fill();
-        }
-        ctx.restore();
-      });
-      requestAnimationFrame(renderParticles);
-    }
-    renderParticles();
   </script>
 </body>
 </html>
